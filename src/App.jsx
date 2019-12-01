@@ -62,19 +62,22 @@ const colorRange = [
 
 const App = () => {
   const [data, setData] = useState();
+  // const [elevationScale, setElevationScale] = useState(1);
+
+  // const elevationScale = {min: 1, max: 50};
 
   function fetchData() {
-    d3.csv(DATA_URL, (error, response) => {
-      if (!error) {
-        const resData = response.map(d => [Number(d.lng), Number(d.lat)]);
-        setData(resData);
-      }
+    d3.csv(DATA_URL).then(function(dataRes) {
+      const formattedData = dataRes.map(d => [Number(d.lng), Number(d.lat)]);
+      setData(formattedData); // [{"Hello": "world"}, …]
     });
   }
 
   useEffect(() => {
     fetchData();
-  });
+  }, []);
+
+  const mapStyle = 'mapbox://styles/mapbox/dark-v9';
 
   const layer = new HexagonLayer({
     id: 'heatmap',
@@ -85,14 +88,10 @@ const App = () => {
     elevationScale: data && data.length ? 50 : 0,
     extruded: true,
     getPosition: d => d,
-    onHover: ({ object, x, y }) => {
-      const tooltip = `${object.centroid.join(', ')}\nCount: ${
-        object.points.length
-      }`;
-    },
+    onHover: (info, event) => {},
     opacity: 1,
     pickable: true,
-    radius: 1000,
+    radius: 2000,
     upperPercentile: 100,
     material,
 
@@ -109,6 +108,7 @@ const App = () => {
       controller
     >
       <StaticMap
+        mapStyle={mapStyle}
         reuseMaps
         preventStyleDiffing
         mapboxApiAccessToken={MAPBOX_TOKEN}

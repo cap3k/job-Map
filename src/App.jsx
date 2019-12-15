@@ -6,8 +6,7 @@ import * as d3 from 'd3';
 
 const MAPBOX_TOKEN = process.env.REACT_APP_MapboxAccessToken;
 
-const DATA_URL =
-  'https://raw.githubusercontent.com/uber-common/deck.gl-data/master/examples/3d-heatmap/heatmap-data.csv';
+const DATA_URL = 'http://localhost:3000';
 
 const INITIAL_VIEW_STATE = {
   longitude: -1.4157267858730052,
@@ -35,10 +34,12 @@ const App = () => {
   // const elevationScale = {min: 1, max: 50};
 
   function fetchData() {
-    d3.csv(DATA_URL).then(function(dataRes) {
-      const formattedData = dataRes.map(d => [Number(d.lng), Number(d.lat)]);
-      setData(formattedData); // [{"Hello": "world"}, …]
-    });
+    fetch(DATA_URL)
+      .then(res => res.json())
+      .then(resdata => {
+        console.log(resdata);
+        setData(resdata); // [{"Hello": "world"}, …]
+      });
   }
 
   useEffect(() => {
@@ -55,7 +56,7 @@ const App = () => {
     elevationRange: [0, 3000],
     elevationScale: data && data.length ? 50 : 0,
     extruded: true,
-    getPosition: d => d,
+    getPosition: d => d.COORDINATES,
     onHover: (info, event) => {},
     opacity: 1,
     pickable: true,

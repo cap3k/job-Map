@@ -5,6 +5,9 @@
 		},
 		{
 			"path": "."
+		},
+		{
+			"path": "/Users/admin/Documents/GitHub/job-Map-api"
 		}
 	],
 	"settings": {}

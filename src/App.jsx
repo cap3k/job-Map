@@ -4,8 +4,7 @@ import { HexagonLayer } from '@deck.gl/aggregation-layers';
 import DeckGL from '@deck.gl/react';
 
 const MAPBOX_TOKEN = process.env.REACT_APP_MapboxAccessToken;
-
-const DATA_URL = 'http://localhost:3000';
+const DATA_URL = process.env.REACT_APP_DATA_URL;
 
 const INITIAL_VIEW_STATE = {
   longitude: 2.7,
@@ -51,7 +50,7 @@ const App = () => {
     elevationScale: data && data.length ? 50 : 0,
     extruded: true,
     getPosition: d => d.COORDINATES,
-    onHover: (info, event) => { },
+    onHover: (info, event) => {},
     opacity: 1,
     pickable: true,
     radius: 1000,

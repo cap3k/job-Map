@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { StaticMap } from 'react-map-gl';
 import { HexagonLayer } from '@deck.gl/aggregation-layers';
 import DeckGL from '@deck.gl/react';
+import Card from '@material-ui/core/Card';
+import CardContent from '@material-ui/core/CardContent';
 
 const MAPBOX_TOKEN = process.env.REACT_APP_MapboxAccessToken;
 const DATA_URL = process.env.REACT_APP_DATA_URL;
@@ -27,6 +29,10 @@ const colorRange = [
 
 const App = () => {
   const [data, setData] = useState();
+  const [hoveredObject, setHoveredObject] = useState();
+  const [pointerX, setPointerX] = useState();
+  const [pointerY, setPointerY] = useState();
+
   function fetchData() {
     fetch(DATA_URL)
       .then(res => res.json())
@@ -39,6 +45,35 @@ const App = () => {
     fetchData();
   }, []);
 
+  const renderTooltip = () => {
+    return (
+      hoveredObject && (
+        <div
+          style={{
+            position: 'absolute',
+            zIndex: 1,
+            pointerEvents: 'none',
+            left: pointerX,
+            top: pointerY,
+          }}
+        >
+          <Card>
+            <CardContent>
+              {hoveredObject.points.map((offre, index) => {
+                return (
+                  <>
+                    <li>{offre.intitule}</li>
+                    <a href={offre.url}>{offre.url}</a>
+                  </>
+                );
+              })}
+            </CardContent>
+          </Card>
+        </div>
+      )
+    );
+  };
+
   const mapStyle = 'mapbox://styles/mapbox/dark-v9';
 
   const layer = new HexagonLayer({
@@ -50,7 +85,11 @@ const App = () => {
     elevationScale: data && data.length ? 50 : 0,
     extruded: true,
     getPosition: d => d.COORDINATES,
-    onHover: (info, event) => {},
+    onHover: (info, event) => {
+      setHoveredObject(info.object);
+      setPointerX(info.x);
+      setPointerY(info.y);
+    },
     opacity: 1,
     pickable: true,
     radius: 1000,
@@ -63,6 +102,7 @@ const App = () => {
 
   return (
     <DeckGL layers={layer} initialViewState={INITIAL_VIEW_STATE} controller>
+      {renderTooltip}
       <StaticMap
         mapStyle={mapStyle}
         reuseMaps

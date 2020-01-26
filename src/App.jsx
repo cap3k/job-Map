@@ -4,9 +4,15 @@ import { HexagonLayer } from '@deck.gl/aggregation-layers';
 import DeckGL from '@deck.gl/react';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
+import Typography from '@material-ui/core/Typography';
+import Link from '@material-ui/core/Link';
+import TextField from '@material-ui/core/TextField';
+import Paper from '@material-ui/core/Paper';
+import Button from '@material-ui/core/Button';
+import Grid from '@material-ui/core/Grid';
 
 const MAPBOX_TOKEN = process.env.REACT_APP_MapboxAccessToken;
-const DATA_URL = process.env.REACT_APP_DATA_URL;
+const DATA_URL = new URL(process.env.REACT_APP_DATA_URL);
 
 const INITIAL_VIEW_STATE = {
   longitude: 2.7,
@@ -32,8 +38,10 @@ const App = () => {
   const [hoveredObject, setHoveredObject] = useState();
   const [pointerX, setPointerX] = useState();
   const [pointerY, setPointerY] = useState();
+  const [motsCles, setMotsCles] = useState();
 
   function fetchData() {
+    console.log(DATA_URL);
     fetch(DATA_URL)
       .then(res => res.json())
       .then(resdata => {
@@ -41,9 +49,61 @@ const App = () => {
       });
   }
 
+  function fetchDataOnSubmit() {
+    const params = [['motsCles', motsCles]];
+    DATA_URL.search = new URLSearchParams(params).toString();
+    fetchData();
+  }
+
   useEffect(() => {
     fetchData();
   }, []);
+
+  const searchField = () => {
+    return (
+      <Paper
+        style={{
+          position: 'absolute',
+          zIndex: 1,
+          pointerEvents: 'auto',
+          marginLeft: '25%',
+          width: '50%',
+          top: '5%',
+        }}
+      >
+        <form noValidate autoComplete="off">
+          <Grid
+            container
+            direction="row"
+            justify="space-evenly"
+            alignItems="center"
+            spacing={1}
+          >
+            <Grid item>
+              <TextField
+                label="Recherchez un emploi"
+                margin="normal"
+                onChange={e => setMotsCles(e.target.value)}
+              />
+            </Grid>
+            <Grid item>
+              <TextField label="Où?" margin="normal" />
+            </Grid>
+            <Grid item>
+              <Button
+                variant="contained"
+                color="primary"
+                disableElevation
+                onClick={() => fetchDataOnSubmit()}
+              >
+                Primary
+              </Button>
+            </Grid>
+          </Grid>
+        </form>
+      </Paper>
+    );
+  };
 
   const renderTooltip = () => {
     return (
@@ -57,13 +117,16 @@ const App = () => {
             top: pointerY,
           }}
         >
-          <Card>
+          <Card variant="outlined">
             <CardContent>
               {hoveredObject.points.map((offre, index) => {
                 return (
                   <>
-                    <li>{offre.intitule}</li>
-                    <a href={offre.url}>{offre.url}</a>
+                    <Typography variant="body2" component="p">
+                      <Link href={offre.url}>
+                        <li>{offre.intitule}</li>
+                      </Link>
+                    </Typography>
                   </>
                 );
               })}
@@ -101,15 +164,18 @@ const App = () => {
   });
 
   return (
-    <DeckGL layers={layer} initialViewState={INITIAL_VIEW_STATE} controller>
-      {renderTooltip}
-      <StaticMap
-        mapStyle={mapStyle}
-        reuseMaps
-        preventStyleDiffing
-        mapboxApiAccessToken={MAPBOX_TOKEN}
-      />
-    </DeckGL>
+    <>
+      <DeckGL layers={layer} initialViewState={INITIAL_VIEW_STATE} controller>
+        {renderTooltip}
+        {searchField}
+        <StaticMap
+          mapStyle={mapStyle}
+          reuseMaps
+          preventStyleDiffing
+          mapboxApiAccessToken={MAPBOX_TOKEN}
+        />
+      </DeckGL>
+    </>
   );
 };
 

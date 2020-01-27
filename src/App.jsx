@@ -39,9 +39,9 @@ const App = () => {
   const [pointerX, setPointerX] = useState();
   const [pointerY, setPointerY] = useState();
   const [motsCles, setMotsCles] = useState();
+  const [commune, setCommune] = useState();
 
   function fetchData() {
-    console.log(DATA_URL);
     fetch(DATA_URL)
       .then(res => res.json())
       .then(resdata => {
@@ -50,7 +50,13 @@ const App = () => {
   }
 
   function fetchDataOnSubmit() {
-    const params = [['motsCles', motsCles]];
+    const params = [];
+    if (motsCles) {
+      params.push(['motsCles', motsCles]);
+    }
+    if (commune) {
+      params.push(['commune', commune]);
+    }
     DATA_URL.search = new URLSearchParams(params).toString();
     fetchData();
   }
@@ -87,7 +93,11 @@ const App = () => {
               />
             </Grid>
             <Grid item>
-              <TextField label="Où?" margin="normal" />
+              <TextField
+                label="Où?"
+                margin="normal"
+                onChange={e => setCommune(e.target.value)}
+              />
             </Grid>
             <Grid item>
               <Button

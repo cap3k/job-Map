@@ -2,7 +2,8 @@
     "build": {
         "env": {
             "REACT_APP_MapboxAccessToken": "@react_app_mapboxaccesstoken",
-            "REACT_APP_DATA_URL": "@react_app_data_url"
+            "REACT_APP_DATA_URL": "@react_app_data_url",
+            "REACT_APP_AUTOCOMPLETE_URL": "@react_app_autocomplete_url"
         }
     }
 }

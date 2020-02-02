@@ -6,10 +6,7 @@ import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import Typography from '@material-ui/core/Typography';
 import Link from '@material-ui/core/Link';
-import TextField from '@material-ui/core/TextField';
-import Paper from '@material-ui/core/Paper';
-import Button from '@material-ui/core/Button';
-import Grid from '@material-ui/core/Grid';
+import SearchField from './components/SearchFields';
 
 const MAPBOX_TOKEN = process.env.REACT_APP_MapboxAccessToken;
 const DATA_URL = new URL(process.env.REACT_APP_DATA_URL);
@@ -34,86 +31,22 @@ const colorRange = [
 ];
 
 const App = () => {
-  const [data, setData] = useState();
   const [hoveredObject, setHoveredObject] = useState();
   const [pointerX, setPointerX] = useState();
   const [pointerY, setPointerY] = useState();
-  const [motsCles, setMotsCles] = useState();
-  const [commune, setCommune] = useState();
-
-  function fetchData() {
-    fetch(DATA_URL)
-      .then(res => res.json())
-      .then(resdata => {
-        setData(resdata);
-      });
-  }
-
-  function fetchDataOnSubmit() {
-    const params = [];
-    if (motsCles) {
-      params.push(['motsCles', motsCles]);
-    }
-    if (commune) {
-      params.push(['commune', commune]);
-    }
-    DATA_URL.search = new URLSearchParams(params).toString();
-    fetchData();
-  }
+  const [data, setData] = useState();
+  const [url, setURL] = useState(DATA_URL);
 
   useEffect(() => {
+    function fetchData() {
+      fetch(url)
+        .then(res => res.json())
+        .then(resdata => {
+          setData(resdata);
+        });
+    }
     fetchData();
-  }, []);
-
-  const searchField = () => {
-    return (
-      <Paper
-        style={{
-          position: 'absolute',
-          zIndex: 1,
-          pointerEvents: 'auto',
-          marginLeft: '25%',
-          width: '50%',
-          top: '5%',
-        }}
-      >
-        <form noValidate autoComplete="off">
-          <Grid
-            container
-            direction="row"
-            justify="space-evenly"
-            alignItems="center"
-            spacing={1}
-          >
-            <Grid item>
-              <TextField
-                label="Recherchez un emploi"
-                margin="normal"
-                onChange={e => setMotsCles(e.target.value)}
-              />
-            </Grid>
-            <Grid item>
-              <TextField
-                label="Où?"
-                margin="normal"
-                onChange={e => setCommune(e.target.value)}
-              />
-            </Grid>
-            <Grid item>
-              <Button
-                variant="contained"
-                color="primary"
-                disableElevation
-                onClick={() => fetchDataOnSubmit()}
-              >
-                Primary
-              </Button>
-            </Grid>
-          </Grid>
-        </form>
-      </Paper>
-    );
-  };
+  }, [url]);
 
   const renderTooltip = () => {
     return (
@@ -177,7 +110,10 @@ const App = () => {
     <>
       <DeckGL layers={layer} initialViewState={INITIAL_VIEW_STATE} controller>
         {renderTooltip}
-        {searchField}
+        <SearchField
+          handleChange={updatedUrl => setURL(updatedUrl)}
+          url={url}
+        />
         <StaticMap
           mapStyle={mapStyle}
           reuseMaps

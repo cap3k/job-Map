@@ -3,7 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@material-ui/core": "^4.8.3",
+    "@material-ui/core": "^4.9.1",
+    "@material-ui/icons": "^4.9.1",
+    "@material-ui/lab": "^4.0.0-alpha.41",
     "babel-eslint": "^10.0.3",
     "d3": "^5.14.2",
     "deck.gl": "^7.3.6",

@@ -2,11 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { StaticMap } from 'react-map-gl';
 import { HexagonLayer } from '@deck.gl/aggregation-layers';
 import DeckGL from '@deck.gl/react';
-import Card from '@material-ui/core/Card';
-import CardContent from '@material-ui/core/CardContent';
-import Typography from '@material-ui/core/Typography';
-import Link from '@material-ui/core/Link';
 import SearchField from './components/SearchFields';
+import Tooltip from './components/Tooltip';
 
 const MAPBOX_TOKEN = process.env.REACT_APP_MapboxAccessToken;
 const DATA_URL = new URL(process.env.REACT_APP_DATA_URL);
@@ -48,38 +45,6 @@ const App = () => {
     fetchData();
   }, [url]);
 
-  const renderTooltip = () => {
-    return (
-      hoveredObject && (
-        <div
-          style={{
-            position: 'absolute',
-            zIndex: 1,
-            pointerEvents: 'none',
-            left: pointerX,
-            top: pointerY,
-          }}
-        >
-          <Card variant="outlined">
-            <CardContent>
-              {hoveredObject.points.map((offre, index) => {
-                return (
-                  <>
-                    <Typography variant="body2" component="p">
-                      <Link href={offre.url}>
-                        <li>{offre.intitule}</li>
-                      </Link>
-                    </Typography>
-                  </>
-                );
-              })}
-            </CardContent>
-          </Card>
-        </div>
-      )
-    );
-  };
-
   const mapStyle = 'mapbox://styles/mapbox/dark-v9';
 
   const layer = new HexagonLayer({
@@ -108,8 +73,14 @@ const App = () => {
 
   return (
     <>
+      {hoveredObject && (
+        <Tooltip
+          hoveredObject={hoveredObject}
+          pointerX={pointerX}
+          pointerY={pointerY}
+        />
+      )}
       <DeckGL layers={layer} initialViewState={INITIAL_VIEW_STATE} controller>
-        {renderTooltip}
         <SearchField
           handleChange={updatedUrl => setURL(updatedUrl)}
           url={url}

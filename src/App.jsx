@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { StaticMap } from 'react-map-gl';
 import { HexagonLayer } from '@deck.gl/aggregation-layers';
 import DeckGL from '@deck.gl/react';
+import CircularProgress from '@material-ui/core/CircularProgress';
 import SearchField from './components/SearchFields';
 import Tooltip from './components/Tooltip';
 
@@ -33,19 +34,22 @@ const App = () => {
   const [pointerY, setPointerY] = useState();
   const [data, setData] = useState();
   const [url, setURL] = useState(DATA_URL);
+  const [loading, setLoading] = useState(DATA_URL);
 
   useEffect(() => {
     function fetchData() {
+      setLoading(true);
       fetch(url)
         .then(res => res.json())
         .then(resdata => {
+          setLoading(false);
           setData(resdata);
         });
     }
     fetchData();
   }, [url]);
 
-  const mapStyle = 'mapbox://styles/mapbox/dark-v9';
+  const mapStyle = 'mapbox://styles/mapbox/light-v10';
 
   const layer = new HexagonLayer({
     id: 'heatmap',
@@ -56,7 +60,7 @@ const App = () => {
     elevationScale: data && data.length ? 50 : 0,
     extruded: true,
     getPosition: d => d.COORDINATES,
-    onHover: (info, event) => {
+    onClick: (info, event) => {
       setHoveredObject(info.object);
       setPointerX(info.x);
       setPointerY(info.y);
@@ -65,7 +69,7 @@ const App = () => {
     pickable: true,
     radius: 1000,
     upperPercentile: 100,
-
+    autoHighlight: true,
     transitions: {
       elevationScale: 3000,
     },
@@ -80,18 +84,32 @@ const App = () => {
           pointerY={pointerY}
         />
       )}
-      <DeckGL layers={layer} initialViewState={INITIAL_VIEW_STATE} controller>
-        <SearchField
-          handleChange={updatedUrl => setURL(updatedUrl)}
-          url={url}
+      {loading && (
+        <CircularProgress
+          size={40}
+          style={{
+            position: 'absolute',
+            zIndex: 1,
+            left: '50%',
+            top: '40%',
+          }}
         />
-        <StaticMap
-          mapStyle={mapStyle}
-          reuseMaps
-          preventStyleDiffing
-          mapboxApiAccessToken={MAPBOX_TOKEN}
-        />
-      </DeckGL>
+      )}
+      <div onClick={() => setHoveredObject(null)}>
+        <DeckGL layers={layer} initialViewState={INITIAL_VIEW_STATE} controller>
+          <SearchField
+            handleChange={updatedUrl => setURL(updatedUrl)}
+            url={url}
+          />
+
+          <StaticMap
+            mapStyle={mapStyle}
+            reuseMaps
+            preventStyleDiffing
+            mapboxApiAccessToken={MAPBOX_TOKEN}
+          />
+        </DeckGL>
+      </div>
     </>
   );
 };

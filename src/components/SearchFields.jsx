@@ -72,7 +72,7 @@ const SearchField = ({ handleChange, url }) => {
             <Autocomplete
               id="combo-box-demo"
               options={options}
-              getOptionLabel={option => option.libelle}
+              getOptionLabel={option => option.libelle +' '+ option.codePostal}
               onChange={(event, value) => setCommune(value)}
               autoComplete
               autoSelect

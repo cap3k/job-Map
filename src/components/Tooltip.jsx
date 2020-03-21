@@ -11,7 +11,6 @@ const Tooltip = ({ hoveredObject, pointerX, pointerY }) => {
         style={{
           position: 'absolute',
           zIndex: 1,
-          pointerEvents: 'none',
           left: pointerX,
           top: pointerY,
         }}
@@ -22,8 +21,12 @@ const Tooltip = ({ hoveredObject, pointerX, pointerY }) => {
               return (
                 <>
                   <Typography variant="body2" component="p">
-                    <Link href={offre.url}>
-                      <li>{offre.intitule}</li>
+                    <Link
+                      href={offre.url}
+                      rel="noopener noreferrer"
+                      target="_blank"
+                    >
+                      <li>{offre.intitule} </li>
                     </Link>
                   </Typography>
                 </>

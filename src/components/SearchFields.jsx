@@ -63,7 +63,7 @@ const SearchField = ({ handleChange, url }) => {
         >
           <Grid item>
             <TextField
-              label="Recherchez un emploi"
+              label="Look for a job"
               margin="normal"
               onChange={e => setMotsCles(e.target.value)}
             />
@@ -84,7 +84,7 @@ const SearchField = ({ handleChange, url }) => {
                 <TextField
                   {...params}
                   style={{ width: 200 }}
-                  label="Où?"
+                  label="Where?"
                   margin="normal"
                   fullWidth
                   onChange={e => setCommune(e.target.value)}

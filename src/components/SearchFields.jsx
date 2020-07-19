@@ -63,7 +63,7 @@ const SearchField = ({ handleChange, url }) => {
         >
           <Grid item>
             <TextField
-              label="Look for a job"
+              label="Enter key word"
               margin="normal"
               onChange={e => setMotsCles(e.target.value)}
             />

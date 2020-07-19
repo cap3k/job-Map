@@ -3,8 +3,12 @@ import { StaticMap } from 'react-map-gl';
 import { HexagonLayer } from '@deck.gl/aggregation-layers';
 import DeckGL from '@deck.gl/react';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import SearchField from './components/SearchFields';
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogTitle from '@material-ui/core/DialogTitle';
+import Button from '@material-ui/core/Button';
 import Tooltip from './components/Tooltip';
+import SearchField from './components/SearchFields';
 
 const MAPBOX_TOKEN = process.env.REACT_APP_MapboxAccessToken;
 const DATA_URL = new URL(process.env.REACT_APP_DATA_URL);
@@ -35,6 +39,7 @@ const App = () => {
   const [data, setData] = useState();
   const [url, setURL] = useState(DATA_URL);
   const [loading, setLoading] = useState(DATA_URL);
+  const [openDialog, setOpenDialog] = useState(false);
 
   useEffect(() => {
     function fetchData() {
@@ -44,6 +49,11 @@ const App = () => {
         .then(resdata => {
           setLoading(false);
           setData(resdata);
+        })
+        .catch(err => {
+          // Do something for an error here
+          console.log(setOpenDialog(true));
+          setLoading(false);
         });
     }
     fetchData();
@@ -110,6 +120,19 @@ const App = () => {
           />
         </DeckGL>
       </div>
+      <Dialog
+        open={openDialog}
+        onClose={() => setOpenDialog(false)}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">No matching result</DialogTitle>
+        <DialogActions>
+          <Button onClick={() => setOpenDialog(false)} color="primary">
+            OK
+          </Button>
+        </DialogActions>
+      </Dialog>
     </>
   );
 };
